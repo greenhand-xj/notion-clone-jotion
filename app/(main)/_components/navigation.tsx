@@ -3,8 +3,9 @@
 import { cn } from "@/lib/utils"
 import { ChevronsLeft, MenuIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { ElementRef, useRef, useState } from "react"
+import { ElementRef, useRef, useState, useEffect } from "react"
 import { useMediaQuery } from "usehooks-ts"
+import { UserItem } from "./user-item"
 
 export const Navigation = () => {
   const pathname = usePathname()
@@ -14,6 +15,20 @@ export const Navigation = () => {
   const navbarRef = useRef<ElementRef<"div">>(null)
   const [isResetting, setIsResetting] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(isMobile)
+
+  useEffect(() => {
+    if (isMobile) {
+      collapse()
+    } else {
+      resetWidth()
+    }
+  }, [isMobile])
+
+  useEffect(() => {
+    if (isMobile) {
+      collapse()
+    }
+  }, [isMobile, pathname])
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -38,6 +53,33 @@ export const Navigation = () => {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
   }
+
+  const resetWidth = () => {
+    if (sidebarRef.current && navbarRef.current) {
+      setIsCollapsed(false)
+      setIsResetting(true)
+      sidebarRef.current.style.width = isMobile ? "100%" : "240px"
+      navbarRef.current.style.setProperty("width", "calc(100% - 240px)")
+      navbarRef.current.style.left = isMobile ? "100%" : "240px"
+      setTimeout(() => {
+        setIsResetting(false)
+      }, 300);
+    }
+  }
+
+  const collapse = () => {
+    if (sidebarRef.current && navbarRef.current) {
+      setIsCollapsed(true)
+      setIsResetting(true)
+      sidebarRef.current.style.width = "0"
+      navbarRef.current.style.setProperty("width", "100%")
+      navbarRef.current.style.left = "0"
+      setTimeout(() => {
+        setIsResetting(false)
+      }, 300);
+    }
+  }
+
   return (
     <>
       <aside ref={sidebarRef}
@@ -47,6 +89,7 @@ export const Navigation = () => {
             isMobile && "w-0"
           )}>
         <div role="button"
+          onClick={collapse}
           className={
             cn("text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
               isMobile && "opacity-100"
@@ -54,7 +97,7 @@ export const Navigation = () => {
           <ChevronsLeft className="h-6 w-6" />
         </div>
         <div>
-          <p>Action items</p>
+          <UserItem />
         </div>
         <div className="mt-4">
           <p>Documents</p>
@@ -62,6 +105,8 @@ export const Navigation = () => {
         <div
           className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize h-full absolute top-0 right-0 w-1 bg-primary/10"
           onMouseDown={handleMouseDown}
+          onClick={resetWidth}
+          onDoubleClick={resetWidth}
         ></div>
       </aside>
       <div ref={navbarRef} className={cn(
@@ -70,7 +115,7 @@ export const Navigation = () => {
         isMobile && "w-full left-0"
       )}>
         <nav className="bg-transparent px-3 py-2 w-full">
-          {isCollapsed && <MenuIcon role="button" className="h-6 w-6 text-muted-foreground" />}
+          {isCollapsed && <MenuIcon onClick={resetWidth} role="button" className="h-6 w-6 text-muted-foreground" />}
         </nav>
       </div>
     </>
