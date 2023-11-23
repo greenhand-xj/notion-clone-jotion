@@ -67,6 +67,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
             <Item
               id={document._id}
               label={document.title}
+              level={level}
               onClick={() => onRedirect(document._id)}
               icon={FileIcon}
               documentIcon={document.icon}
