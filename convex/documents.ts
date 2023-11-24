@@ -22,8 +22,11 @@ export const archive = mutation({
     }
 
     const recursiveArchive = async (documentId: Id<'documents'>) => {
-      const children = await ctx.db.query("documents")
-        .withIndex('by_user_parent', (q) => q.eq('userId', userId).eq('parentDocument', documentId))
+      const children = await ctx.db
+        .query('documents')
+        .withIndex('by_user_parent', (q) =>
+          q.eq('userId', userId).eq('parentDocument', documentId)
+        )
         .collect()
       for (const child of children) {
         await ctx.db.patch(child._id, {
@@ -56,7 +59,7 @@ export const getSidebar = query({
       .withIndex('by_user_parent', (q) =>
         q.eq('userId', userId).eq('parentDocument', args.parentDocument)
       )
-      .filter(q => q.eq(q.field('isArchived'), false))
+      .filter((q) => q.eq(q.field('isArchived'), false))
       .order('desc')
       .collect()
     return documents
@@ -97,7 +100,6 @@ export const create = mutation({
   },
 })
 
-//maybe bug occurs here
 export const getTrash = query({
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity()
@@ -107,8 +109,8 @@ export const getTrash = query({
     const userId = identity.subject
     const documents = await ctx.db
       .query('documents')
-      .withIndex('by_userId', (q) => q.eq('userId', userId))
-      .filter(q => q.eq(q.field('isArchived'), true))
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .filter((q) => q.eq(q.field('isArchived'), true))
       .order('desc')
       .collect()
     return documents
@@ -134,8 +136,11 @@ export const restore = mutation({
     }
 
     const recursiveRestore = async (documentId: Id<'documents'>) => {
-      const children = await ctx.db.query("documents")
-        .withIndex('by_user_parent', (q) => q.eq('userId', userId).eq('parentDocument', documentId))
+      const children = await ctx.db
+        .query('documents')
+        .withIndex('by_user_parent', (q) =>
+          q.eq('userId', userId).eq('parentDocument', documentId)
+        )
         .collect()
       for (const child of children) {
         await ctx.db.patch(child._id, {
@@ -181,5 +186,22 @@ export const remove = mutation({
     }
     await ctx.db.delete(args.id)
     return existingDocument
+  },
+})
+
+export const getSearch = query({
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new Error('Not authenticated')
+    }
+    const userId = identity.subject
+    const documents = await ctx.db
+      .query('documents')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .filter((q) => q.eq(q.field('isArchived'), false))
+      .collect()
+
+    return documents
   },
 })
