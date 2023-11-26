@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings, Trash } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import { ElementRef, useRef, useState, useEffect } from "react"
 import { useMediaQuery } from "usehooks-ts"
 import { UserItem } from "./user-item"
@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { TrashBox } from "./trash-box"
 import { useSearchStore } from "@/hooks/use-search"
 import { useSettingsStore } from "@/hooks/use-settings"
+import { Navbar } from "./navbar"
 
 export const Navigation = () => {
   const pathname = usePathname()
@@ -22,6 +23,7 @@ export const Navigation = () => {
   const create = useMutation(api.documents.create)
   const search = useSearchStore()
   const settings = useSettingsStore()
+  const params = useParams()
 
   const isResizingRef = useRef(false)
   const sidebarRef = useRef<ElementRef<"aside">>(null)
@@ -150,9 +152,13 @@ export const Navigation = () => {
         isResetting && "transition-all duration-300 ease-in-out",
         isMobile && "w-full left-0"
       )}>
-        <nav className="bg-transparent px-3 py-2 w-full">
-          {isCollapsed && <MenuIcon onClick={resetWidth} role="button" className="h-6 w-6 text-muted-foreground" />}
-        </nav>
+        {!!params.documentId ? (
+          <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth}></Navbar>
+        )
+          : <nav className="bg-transparent px-3 py-2 w-full">
+            {isCollapsed && <MenuIcon onClick={resetWidth} role="button" className="h-6 w-6 text-muted-foreground" />}
+          </nav>
+        }
       </div>
     </>
   )

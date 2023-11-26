@@ -205,3 +205,85 @@ export const getSearch = query({
     return documents
   },
 })
+
+
+export const getById = query({
+  args: {
+    documentId: v.id('documents'),
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity()
+
+    const document = await ctx.db.get(args.documentId)
+    if (!document) {
+      throw new Error('Document not found')
+    }
+    if (document.isPublished && !document.isArchived) {
+      return document
+    }
+    if (!identity) {
+      throw new Error('Not authenticated')
+    }
+    const useId = identity.subject
+    if (document.userId !== useId) {
+      throw new Error('Unauthorized')
+    }
+    return document
+  },
+})
+
+
+export const update = mutation({
+  args: {
+    id: v.id('documents'),
+    title: v.optional(v.string()),
+    content: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
+    icon: v.optional(v.string()),
+    isPublished: v.optional(v.boolean()),
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new Error('Not authenticated')
+    }
+    const userId = identity.subject
+
+    const { id, ...rest } = args
+
+    const existingDocument = await ctx.db.get(id)
+    if (!existingDocument) {
+      throw new Error('Document not found')
+    }
+    if (existingDocument.userId !== userId) {
+      throw new Error('Unauthorized')
+    }
+    const document = await ctx.db.patch(args.id, rest)
+    return document
+  }
+})
+
+export const removeIcon = mutation({
+  args: {
+    id: v.id('documents'),
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new Error('Not authenticated')
+    }
+    const userId = identity.subject
+
+    const existingDocument = await ctx.db.get(args.id)
+    if (!existingDocument) {
+      throw new Error('Document not found')
+    }
+    if (existingDocument.userId !== userId) {
+      throw new Error('Unauthorized')
+    }
+    const document = await ctx.db.patch(args.id, {
+      icon: undefined
+    })
+    return document
+  }
+})
