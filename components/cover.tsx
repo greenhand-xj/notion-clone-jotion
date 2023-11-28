@@ -11,6 +11,7 @@ import { useParams } from 'next/navigation'
 import { Id } from '@/convex/_generated/dataModel'
 import { useEdgeStore } from '@/lib/edgestore'
 import { toast } from 'sonner'
+import { Skeleton } from './ui/skeleton'
 
 interface CoverProps {
   url?: string
@@ -51,6 +52,7 @@ export const Cover = ({ url, preview }: CoverProps) => {
       )}
     >
       {!!url && (
+        // placeholder='blur'
         <Image priority src={url} fill alt="Cover" className="object-cover" />
       )}
       {url && !preview && (
@@ -76,5 +78,11 @@ export const Cover = ({ url, preview }: CoverProps) => {
         </div>
       )}
     </div>
+  )
+}
+
+Cover.SKeleton = function CoverSkeleton() {
+  return (
+    <Skeleton className='w-full h-[12vh]' />
   )
 }
