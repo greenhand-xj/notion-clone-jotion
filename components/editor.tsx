@@ -29,7 +29,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
     uploadFile: handleUpload
   })
   return (
-    <div>
+    <div className='mt-2'>
       <BlockNoteView editor={editor} theme={resolvedTheme === 'dark' ? 'dark' : 'light'} />
     </div>
   )
