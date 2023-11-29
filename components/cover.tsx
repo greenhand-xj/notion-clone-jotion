@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { Button } from './ui/button'
-import { ImageIcon, X } from 'lucide-react'
+import { ImageIcon, UnfoldVertical, X } from 'lucide-react'
 import { useCoverImageStore } from '@/hooks/use-cover-image'
 import { useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
@@ -43,10 +43,13 @@ export const Cover = ({ url, preview }: CoverProps) => {
     }
 
   }
+  const handleReposition = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+  }
   return (
     <div
       className={cn(
-        'relative w-full h-[35vh] group',
+        'relative w-full h-[35vh] group mt-12',
         !url && 'h-[12vh]',
         url && 'bg-muted'
       )}
@@ -65,6 +68,15 @@ export const Cover = ({ url, preview }: CoverProps) => {
           >
             <ImageIcon className="h-4 w-4 mr-2" />
             Change Cover
+          </Button>
+          <Button
+            variant={'outline'}
+            className="text-muted-foreground text-xs ml-2"
+            onClick={handleReposition}
+            size={'sm'}
+          >
+            <UnfoldVertical className="h-4 w-4 mr-2" />
+            Reposition
           </Button>
           <Button
             variant={'outline'}
