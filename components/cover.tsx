@@ -12,6 +12,7 @@ import { Id } from '@/convex/_generated/dataModel'
 import { useEdgeStore } from '@/lib/edgestore'
 import { toast } from 'sonner'
 import { Skeleton } from './ui/skeleton'
+import { ElementRef, ElementType, useMemo, useRef, useState } from 'react'
 
 interface CoverProps {
   url?: string
@@ -22,6 +23,9 @@ export const Cover = ({ url, preview }: CoverProps) => {
   const removeCoverImage = useMutation(api.documents.removeCoverImage)
   const params = useParams()
   const { edgestore } = useEdgeStore()
+  const [isDragging, setIsDragging] = useState(false)
+  const dragRef = useRef<HTMLDivElement>(null)
+  const coverRef = useRef<HTMLImageElement>(null)
   const onRemove = async () => {
     if (url) {
       const promise1 = edgestore.publicFiles.delete({
@@ -43,20 +47,50 @@ export const Cover = ({ url, preview }: CoverProps) => {
     }
 
   }
+  const handleMouseMove = (e: MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    // if (!isDragging) return
+    if (!dragRef.current) return
+    if (!coverRef.current) return
+    const rect = dragRef.current.getBoundingClientRect()
+    const y = e.clientY - rect.top
+    const posY = (1 - (y / rect.height)) * 100
+    coverRef.current.style.objectPosition = `center ${posY}%`
+  }
+  const handleMouseUp = (e: MouseEvent) => {
+    e.stopPropagation()
+    setIsDragging(false)
+    dragRef.current?.removeEventListener('mousemove', handleMouseMove)
+    dragRef.current?.removeEventListener('mousedown', handleMouseDown)
+    document.removeEventListener('mouseup', handleMouseUp)
+  }
+  const handleMouseDown = () => {
+    dragRef.current?.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+  }
+
+
   const handleReposition = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
+    if (!dragRef.current) return
+    setIsDragging(true)
+    dragRef.current?.addEventListener('mousedown', handleMouseDown)
   }
+
   return (
     <div
+      ref={dragRef}
       className={cn(
         'relative w-full h-[35vh] group mt-12',
         !url && 'h-[12vh]',
-        url && 'bg-muted'
+        url && 'bg-muted',
+        isDragging && 'cursor-move'
       )}
     >
       {!!url && (
         // placeholder='blur'
-        <Image priority src={url} fill alt="Cover" className="object-cover" />
+        <Image ref={coverRef} onDrag={e => e.preventDefault()} onDragStart={e => e.preventDefault()} onDragEnd={e => e.preventDefault()} objectPosition={`center center`} priority src={url} fill alt="Cover" className="object-cover" />
       )}
       {url && !preview && (
         <div className="opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 items-center gap-x-2">
@@ -94,7 +128,4 @@ export const Cover = ({ url, preview }: CoverProps) => {
 }
 
 Cover.SKeleton = function CoverSkeleton() {
-  return (
-    <Skeleton className='w-full h-[12vh]' />
-  )
 }
