@@ -128,4 +128,7 @@ export const Cover = ({ url, preview }: CoverProps) => {
 }
 
 Cover.SKeleton = function CoverSkeleton() {
+  return (
+    <Skeleton className='w-full h-[12vh]' />
+  )
 }
