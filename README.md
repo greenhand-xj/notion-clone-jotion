@@ -1,6 +1,7 @@
 # 全栈 Notion Clone -- Jotion: Next.js 13, React, Convex, Tailwind
 
-![Copy of Copy of Copy of Fullstack Twitter Clone (6)](https://github.com/AntonioErdeljac/notion-clone-tutorial/assets/23248726/66bcfca3-93bf-4aa4-950d-f98c020e1156)
+![Jotion](![image](https://github.com/greenhand-xj/notion-clone-jotion/assets/81698900/1eb21783-23bf-4904-bd91-22e3584fd13c)
+)
 关键功能点：
 
 - 实时数据库  🔗 
