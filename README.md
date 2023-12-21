@@ -1,7 +1,6 @@
 # 全栈 Notion Clone -- Jotion: Next.js 13, React, Convex, Tailwind
 
-![Jotion](![image](https://github.com/greenhand-xj/notion-clone-jotion/assets/81698900/1eb21783-23bf-4904-bd91-22e3584fd13c)
-)
+(![Snipaste_2023-12-21_20-03-33](https://github.com/greenhand-xj/notion-clone-jotion/assets/81698900/c6f6cc73-9e47-4fbc-a74b-cba981c0a5e6)
 关键功能点：
 
 - 实时数据库  🔗 
