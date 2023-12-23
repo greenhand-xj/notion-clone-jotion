@@ -25,10 +25,10 @@
 
 **Node version 18.x.x**
 
-### Cloning the repository
+### 克隆仓库
 
 ```shell
-git clone https://github.com/AntonioErdeljac/notion-clone-tutorial.git
+git clone https://github.com/greenhand-xj/notion-clone-jotion.git
 ```
 
 ### Install packages
